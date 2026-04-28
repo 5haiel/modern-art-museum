@@ -1,0 +1,292 @@
+{
+  "info": {
+    "name": "Modern Art Museum - Museum Filters",
+    "_postman_id": "9d7f8f36-b8da-4b43-9f07-1f5e0a7d1001",
+    "description": "Pruebas del taller de filtros y paginacion para GET /museums",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Museums - Happy Path",
+      "item": [
+        {
+          "name": "List default",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Museums - Filters",
+      "item": [
+        {
+          "name": "Filter by city",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?city=Bogota",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Bogota"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?name=Oro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Oro"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by foundedBefore",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?foundedBefore=1900",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "foundedBefore",
+                  "value": "1900"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by city and foundedBefore",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?city=Bogota&foundedBefore=1900",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Bogota"
+                },
+                {
+                  "key": "foundedBefore",
+                  "value": "1900"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by name and city",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?name=Arte&city=Bogota",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Arte"
+                },
+                {
+                  "key": "city",
+                  "value": "Bogota"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Museums - Pagination",
+      "item": [
+        {
+          "name": "Pagination page 2 limit 5",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?page=2&limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter plus pagination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?city=Bogota&page=2&limit=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Bogota"
+                },
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "limit",
+                  "value": "2"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Museums - Validation Errors",
+      "item": [
+        {
+          "name": "Invalid page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?page=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Invalid limit",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?limit=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Invalid foundedBefore",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/museums?foundedBefore=no-numero",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "museums"
+              ],
+              "query": [
+                {
+                  "key": "foundedBefore",
+                  "value": "no-numero"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
