@@ -16,6 +16,7 @@ import { ExhibitionEntity } from './exhibition/exhibition.entity/exhibition.enti
 import { ImageEntity } from './image/image.entity/image.entity';
 import { MovementEntity } from './movement/movement.entity/movement.entity';
 import { MuseumEntity } from './museum/museum.entity/museum.entity';
+import { MuseumArtworkModule } from './museum-artwork/museum-artwork.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { MuseumEntity } from './museum/museum.entity/museum.entity';
       dropSchema: true,
       synchronize: true,
     }),
+    MuseumArtworkModule,
   ],
   controllers: [AppController],
   providers: [AppService],
