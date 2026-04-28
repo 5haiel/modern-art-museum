@@ -1,7 +1,7 @@
 import { ArtworkEntity } from 'src/artwork/artwork.entity/artwork.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
-@Entity()
+@Entity('image')
 export class ImageEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

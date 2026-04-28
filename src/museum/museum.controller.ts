@@ -7,11 +7,13 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { BusinessErrorsInterceptor } from '../shared/interceptors/business-errors/business-errors.interceptor';
 import { MuseumDto } from './museum.dto/museum.dto';
+import { MuseumQueryDto } from './museum.dto/museum-query.dto';
 import { MuseumEntity } from './museum.entity/museum.entity';
 import { MuseumService } from './museum.service';
 
@@ -21,8 +23,8 @@ export class MuseumController {
   constructor(private readonly museumService: MuseumService) {}
 
   @Get()
-  async findAll() {
-    return await this.museumService.findAll();
+  async findAll(@Query() museumQueryDto: MuseumQueryDto) {
+    return await this.museumService.findAll(museumQueryDto);
   }
 
   @Get(':museumId')

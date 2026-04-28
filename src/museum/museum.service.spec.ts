@@ -5,11 +5,23 @@ import { TypeOrmTestingConfig } from '../shared/testing-utils/typeorm-testing-co
 import { MuseumEntity } from '../museum/museum.entity/museum.entity';
 import { MuseumService } from './museum.service';
 import { faker } from '@faker-js/faker';
+import { MuseumQueryDto } from './museum.dto/museum-query.dto';
 
 describe('MuseumService', () => {
   let service: MuseumService;
   let repository: Repository<MuseumEntity>;
   let museumsList: MuseumEntity[];
+
+  const sortMuseums = (museums: MuseumEntity[]) =>
+    [...museums].sort((museumA, museumB) => {
+      if (museumA.foundedBefore !== museumB.foundedBefore) {
+        return museumA.foundedBefore - museumB.foundedBefore;
+      }
+
+      if (museumA.name < museumB.name) return -1;
+      if (museumA.name > museumB.name) return 1;
+      return 0;
+    });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,14 +38,78 @@ describe('MuseumService', () => {
 
   const seedDatabase = async () => {
     repository.clear();
+    const museumsSeed = [
+      {
+        name: 'Museo del Oro',
+        city: 'Bogota',
+        foundedBefore: 1823,
+      },
+      {
+        name: 'Museo Botero',
+        city: 'Bogota',
+        foundedBefore: 2000,
+      },
+      {
+        name: 'Museo Nacional de Colombia',
+        city: 'Bogota',
+        foundedBefore: 1823,
+      },
+      {
+        name: 'Museo de Antioquia',
+        city: 'Medellin',
+        foundedBefore: 1881,
+      },
+      {
+        name: 'Museo de Arte Moderno de Bogota',
+        city: 'Bogota',
+        foundedBefore: 1963,
+      },
+      {
+        name: 'Museo Colonial',
+        city: 'Bogota',
+        foundedBefore: 1942,
+      },
+      {
+        name: 'Museo del Caribe',
+        city: 'Barranquilla',
+        foundedBefore: 2009,
+      },
+      {
+        name: 'Museo Cali Moderno',
+        city: 'Cali',
+        foundedBefore: 1980,
+      },
+      {
+        name: 'Museo de Cartagena',
+        city: 'Cartagena',
+        foundedBefore: 1890,
+      },
+      {
+        name: 'Museo del Oro Quimbaya',
+        city: 'Armenia',
+        foundedBefore: 1986,
+      },
+      {
+        name: 'Museo Casa de la Memoria',
+        city: 'Medellin',
+        foundedBefore: 2012,
+      },
+      {
+        name: 'Museo Arte del Sur',
+        city: 'Bogota',
+        foundedBefore: 1875,
+      },
+    ];
+
     museumsList = [];
-    for (let i = 0; i < 5; i++) {
+    for (const museumSeed of museumsSeed) {
       const museum: MuseumEntity = await repository.save({
-        name: faker.company.name(),
+        name: museumSeed.name,
         description: faker.lorem.sentence(),
         address: faker.address.secondaryAddress(),
-        city: faker.address.city(),
+        city: museumSeed.city,
         image: faker.image.imageUrl(),
+        foundedBefore: museumSeed.foundedBefore,
       });
       museumsList.push(museum);
     }
@@ -46,7 +122,106 @@ describe('MuseumService', () => {
   it('findAll should return all museums', async () => {
     const museums: MuseumEntity[] = await service.findAll();
     expect(museums).not.toBeNull();
-    expect(museums).toHaveLength(museumsList.length);
+    expect(museums).toHaveLength(10);
+  });
+
+  it('findAll should use default pagination values', async () => {
+    const museums: MuseumEntity[] = await service.findAll({});
+    const expectedMuseums = sortMuseums(museumsList).slice(0, 10);
+
+    expect(museums).toHaveLength(10);
+    expect(museums.map((museum) => museum.name)).toEqual(
+      expectedMuseums.map((museum) => museum.name),
+    );
+  });
+
+  it('findAll should filter museums by name', async () => {
+    const museums: MuseumEntity[] = await service.findAll({
+      name: 'oro',
+    } as MuseumQueryDto);
+
+    expect(museums).toHaveLength(2);
+    expect(museums.every((museum) => museum.name.toLowerCase().includes('oro'))).toBe(
+      true,
+    );
+  });
+
+  it('findAll should filter museums by city', async () => {
+    const museums: MuseumEntity[] = await service.findAll({
+      city: 'bog',
+    } as MuseumQueryDto);
+
+    expect(museums).toHaveLength(6);
+    expect(museums.every((museum) => museum.city.toLowerCase().includes('bog'))).toBe(
+      true,
+    );
+  });
+
+  it('findAll should filter museums by foundedBefore', async () => {
+    const museums: MuseumEntity[] = await service.findAll({
+      foundedBefore: 1900,
+    } as MuseumQueryDto);
+
+    expect(museums).toHaveLength(5);
+    expect(museums.every((museum) => museum.foundedBefore < 1900)).toBe(true);
+  });
+
+  it('findAll should combine name and city filters', async () => {
+    const museums: MuseumEntity[] = await service.findAll({
+      name: 'arte',
+      city: 'bog',
+    } as MuseumQueryDto);
+
+    expect(museums).toHaveLength(2);
+    expect(museums.every((museum) => museum.city === 'Bogota')).toBe(true);
+  });
+
+  it('findAll should combine city and foundedBefore filters', async () => {
+    const museums: MuseumEntity[] = await service.findAll({
+      city: 'bog',
+      foundedBefore: 1900,
+    } as MuseumQueryDto);
+
+    expect(museums).toHaveLength(3);
+    expect(museums.every((museum) => museum.city === 'Bogota')).toBe(true);
+    expect(museums.every((museum) => museum.foundedBefore < 1900)).toBe(true);
+  });
+
+  it('findAll should apply explicit pagination values', async () => {
+    const museums: MuseumEntity[] = await service.findAll({
+      page: 2,
+      limit: 5,
+    } as MuseumQueryDto);
+    const expectedMuseums = sortMuseums(museumsList).slice(5, 10);
+
+    expect(museums).toHaveLength(5);
+    expect(museums.map((museum) => museum.name)).toEqual(
+      expectedMuseums.map((museum) => museum.name),
+    );
+  });
+
+  it('findAll should paginate filtered museums', async () => {
+    const museums: MuseumEntity[] = await service.findAll({
+      city: 'bog',
+      page: 2,
+      limit: 2,
+    } as MuseumQueryDto);
+    const expectedMuseums = sortMuseums(
+      museumsList.filter((museum) => museum.city.toLowerCase().includes('bog')),
+    ).slice(2, 4);
+
+    expect(museums).toHaveLength(2);
+    expect(museums.map((museum) => museum.name)).toEqual(
+      expectedMuseums.map((museum) => museum.name),
+    );
+  });
+
+  it('findAll should return an empty array when no museums match the filters', async () => {
+    const museums: MuseumEntity[] = await service.findAll({
+      name: 'inexistente',
+    } as MuseumQueryDto);
+
+    expect(museums).toEqual([]);
   });
 
   it('findOne should return a museum by id', async () => {
@@ -58,6 +233,7 @@ describe('MuseumService', () => {
     expect(museum.address).toEqual(storedMuseum.address);
     expect(museum.city).toEqual(storedMuseum.city);
     expect(museum.image).toEqual(storedMuseum.image);
+    expect(museum.foundedBefore).toEqual(storedMuseum.foundedBefore);
   });
 
   it('findOne should throw an exception for an invalid museum', async () => {
@@ -75,6 +251,7 @@ describe('MuseumService', () => {
       address: faker.address.secondaryAddress(),
       city: faker.address.city(),
       image: faker.image.imageUrl(),
+      foundedBefore: 1990,
       exhibitions: [],
       artworks: [],
     };
@@ -91,6 +268,7 @@ describe('MuseumService', () => {
     expect(storedMuseum.address).toEqual(newMuseum.address);
     expect(storedMuseum.city).toEqual(newMuseum.city);
     expect(storedMuseum.image).toEqual(newMuseum.image);
+    expect(storedMuseum.foundedBefore).toEqual(newMuseum.foundedBefore);
   });
 
   it('update should modify a museum', async () => {

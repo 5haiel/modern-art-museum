@@ -7,7 +7,7 @@ import {
   JoinTable,
 } from 'typeorm';
 
-@Entity()
+@Entity('movement')
 export class MovementEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

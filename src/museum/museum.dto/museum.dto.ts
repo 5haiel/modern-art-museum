@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsNotEmpty, IsString, IsUrl } from 'class-validator';
 
 export class MuseumDto {
   @IsString()
@@ -20,4 +21,9 @@ export class MuseumDto {
   @IsUrl()
   @IsNotEmpty()
   readonly image: string;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsNotEmpty()
+  readonly foundedBefore: number;
 }

@@ -2,7 +2,7 @@ import { ArtworkEntity } from 'src/artwork/artwork.entity/artwork.entity';
 import { ExhibitionEntity } from 'src/exhibition/exhibition.entity/exhibition.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('museum')
 export class MuseumEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -21,6 +21,9 @@ export class MuseumEntity {
 
   @Column()
   image: string;
+
+  @Column({ name: 'founded_before' })
+  foundedBefore: number;
 
   @OneToMany(() => ExhibitionEntity, exhibition => exhibition.museum)
   exhibitions: ExhibitionEntity[];
